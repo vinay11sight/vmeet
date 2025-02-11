@@ -20,7 +20,7 @@ export default createStyleSheet({
     },
 
     participantNameLabel: {
-        color: ColorPalette.lightGrey,
+        color: ColorPalette.green,
         flexShrink: 1,
         fontSize: MD_FONT_SIZE,
         marginLeft: MD_ITEM_MARGIN_PADDING,
@@ -28,14 +28,14 @@ export default createStyleSheet({
     },
 
     statsTitleText: {
-        color: BaseTheme.palette.text01,
+        color: BaseTheme.palette.green,
         fontSize: 16,
         fontWeight: 'bold',
         marginRight: 3
     },
 
     statsInfoText: {
-        color: BaseTheme.palette.text01,
+        color: BaseTheme.palette.green,
         fontSize: 16,
         marginRight: 2,
         marginLeft: 2
@@ -83,7 +83,7 @@ export default createStyleSheet({
 
     contextMenuItemText: {
         ...BaseTheme.typography.bodyShortRegularLarge,
-        color: BaseTheme.palette.text01,
+        color: ColorPalette.green,
         marginLeft: BaseTheme.spacing[4]
     }
 });

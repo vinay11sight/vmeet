@@ -1,8 +1,9 @@
 import ColorSchemeRegistry from '../../../base/color-scheme/ColorSchemeRegistry';
 import { schemeColor } from '../../../base/color-scheme/functions';
 import BaseTheme from '../../../base/ui/components/BaseTheme.native';
+import { ColorPalette } from '../../../base/styles/components/styles/ColorPalette';
 
-const BUTTON_SIZE = 48;
+const BUTTON_SIZE = 50;
 
 // Toolbox, toolbar:
 
@@ -10,14 +11,14 @@ const BUTTON_SIZE = 48;
  * The style of toolbar buttons.
  */
 const toolbarButton = {
-    borderRadius: BaseTheme.shape.borderRadius,
+    backgroundColor: schemeColor('button'),
+    borderRadius: BUTTON_SIZE / 2,
     borderWidth: 0,
     flex: 0,
     flexDirection: 'row',
     height: BUTTON_SIZE,
     justifyContent: 'center',
-    marginHorizontal: 6,
-    marginVertical: 6,
+    marginHorizontal: 7,
     width: BUTTON_SIZE
 };
 
@@ -26,17 +27,24 @@ const toolbarButton = {
  */
 const toolbarButtonIcon = {
     alignSelf: 'center',
-    color: BaseTheme.palette.icon04,
-    fontSize: 24
+    color: ColorPalette.darkGrey,
+    fontSize: 22
 };
 
+/**
+ * The style of toolbar buttons which display white icons.
+ */
+const whiteToolbarButton = {
+    ...toolbarButton,
+    backgroundColor: schemeColor('buttonToggled')
+};
 
 /**
  * The icon style of toolbar buttons which display white icons.
  */
 const whiteToolbarButtonIcon = {
     ...toolbarButtonIcon,
-    color: BaseTheme.palette.icon01
+     color: ColorPalette.white
 };
 
 /**

@@ -18,7 +18,8 @@ import {
 import {
     getLocalParticipant,
     getParticipantById,
-    getParticipantDisplayName
+    getParticipantDisplayName,
+    isValidAttachmentJson
 } from '../base/participants/functions';
 import MiddlewareRegistry from '../base/redux/MiddlewareRegistry';
 import StateListenerRegistry from '../base/redux/StateListenerRegistry';
@@ -528,6 +529,10 @@ function _handleReceivedMessage({ dispatch, getState }: IStore,
     }));
 
     if (shouldShowNotification) {
+        if (isValidAttachmentJson(message)) {
+            const messageJson = JSON.parse(message);
+            message = messageJson.attachment.name;
+        }
         dispatch(showMessageNotification({
             title: displayNameToShow,
             description: message

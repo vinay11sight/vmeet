@@ -10,15 +10,15 @@ export const colors = {
     primary02: '#00225A',
     primary03: '#003486',
     primary04: '#0045B3',
-    primary05: '#0056E0',
-    primary06: '#246FE5',
-    primary07: '#4687ED',
+    primary05: '#4CA649',
+    primary06: '#4CA649',
+    primary07: '#669AEC',
     primary08: '#99BBF3',
     primary09: '#CCDDF9',
 
     surface01: '#040404',
     surface02: '#141414',
-    surface03: '#292929',
+    surface03: '#FFFFFF',
     surface04: '#3D3D3D',
     surface05: '#525252',
     surface06: '#666',
@@ -63,6 +63,7 @@ export const colorMap = {
     ui08: 'surface09',
     ui09: 'surface10',
     ui10: 'surface11',
+    ui11: 'primary06',
 
     // ----- Actions -----
 

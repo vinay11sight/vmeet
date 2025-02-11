@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, ViewStyle } from 'react-native';
+import { Text, View, ViewStyle, Linking, Pressable } from 'react-native';
 import { connect } from 'react-redux';
 
 import { IReduxState } from '../../../app/types';
@@ -35,6 +35,8 @@ class ChatMessage extends Component<IChatMessageProps> {
         const { gifEnabled, message, knocking } = this.props;
         const localMessage = message.messageType === MESSAGE_TYPE_LOCAL;
         const { privateMessage, lobbyChat } = message;
+        const attachment = this.isValidAttachmentJson(message.message);
+        let name, url = message.message;
 
         // Style arrays that need to be updated in various scenarios, such as
         // error messages or others.
@@ -45,7 +47,13 @@ class ChatMessage extends Component<IChatMessageProps> {
             styles.messageBubble as ViewStyle
         ];
 
-        if (localMessage) {
+        if (attachment) {
+             //New attachment type for 11Sight
+            const messageJson = JSON.parse(message.message);
+            url = messageJson.attachment.url;
+            name = messageJson.attachment.name;
+            messageBubbleStyle.push(_styles.remoteMessageBubble);
+        } else if (localMessage) {
             // This is a message sent by the local participant.
 
             // The wrapper needs to be aligned to the right.
@@ -75,26 +83,48 @@ class ChatMessage extends Component<IChatMessageProps> {
 
         const messageText = getMessageText(this.props.message);
 
-        return (
-            <View
-                id = { message.messageId }
-                style = { styles.messageWrapper as ViewStyle } >
-                { this._renderAvatar() }
-                <View style = { detailsWrapperStyle }>
-                    <View style = { messageBubbleStyle }>
-                        <View style = { styles.textWrapper as ViewStyle } >
-                            { this._renderDisplayName() }
-                            { gifEnabled && isGifMessage(messageText)
-                                ? <GifMessage message = { messageText } />
-                                : this._renderMessageTextComponent(messageText) }
-                            { this._renderPrivateNotice() }
+        if (attachment) {
+            return (
+                <View style = { styles.messageWrapper } >
+                    { this._renderAvatar() }
+                    <View style = { detailsWrapperStyle }>
+                        <View style = { messageBubbleStyle }>
+                            <View style = { styles.textWrapper } >
+                                { this._renderDisplayName() }
+                                <Text style = { styles.chatLink }
+                                   onPress={() => Linking.openURL(url)}>
+                                   {name}
+                                 </Text>
+                                { this._renderPrivateNotice() }
+                            </View>
+                            { this._renderPrivateReplyButton() }
                         </View>
-                        { this._renderPrivateReplyButton() }
+                        { this._renderTimestamp() }
                     </View>
-                    { this._renderTimestamp() }
                 </View>
-            </View>
-        );
+            );
+        } else {
+            return (
+                <View
+                    id = { message.messageId }
+                    style = { styles.messageWrapper as ViewStyle } >
+                    { this._renderAvatar() }
+                    <View style = { detailsWrapperStyle }>
+                        <View style = { messageBubbleStyle }>
+                            <View style = { styles.textWrapper as ViewStyle } >
+                                { this._renderDisplayName() }
+                                { gifEnabled && isGifMessage(messageText)
+                                    ? <GifMessage message = { messageText } />
+                                    : this._renderMessageTextComponent(messageText) }
+                                { this._renderPrivateNotice() }
+                            </View>
+                            { this._renderPrivateReplyButton() }
+                        </View>
+                        { this._renderTimestamp() }
+                    </View>
+                </View>
+            );
+        }
     }
 
     /**
@@ -222,6 +252,26 @@ class ChatMessage extends Component<IChatMessageProps> {
             </Text>
         );
     }
+
+    /**
+     * Detects whether given input is valid JSON or not.
+     *
+     * @param {string} str - Input.
+     * @returns {boolean}
+     */
+     isValidAttachmentJson(str) {
+        try {
+            const json = JSON.parse(str);
+            const attachment = json?.attachment;
+            if (attachment && attachment.name && attachment.url) {
+                return true;
+            }
+        } catch (e) {
+            return false;
+        }
+        return false;
+    }
+
 }
 
 /**

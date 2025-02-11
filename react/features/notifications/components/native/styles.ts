@@ -7,7 +7,7 @@ const contentColumn = {
 };
 
 const notification = {
-    backgroundColor: BaseTheme.palette.ui10,
+    backgroundColor: BaseTheme.palette.ui11,
     borderRadius: BaseTheme.shape.borderRadius,
     borderLeftColor: BaseTheme.palette.link01Active,
     borderLeftWidth: BaseTheme.spacing[1],

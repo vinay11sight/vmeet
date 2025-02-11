@@ -19,7 +19,7 @@ const participantListDescription = {
  */
 const flexContent = {
     alignItems: 'center',
-    color: BaseTheme.palette.icon01,
+    color: BaseTheme.palette.icon04,
     display: 'flex',
     flex: 1
 };
@@ -49,7 +49,8 @@ const contextMenuItem = {
     display: 'flex',
     flexDirection: 'row',
     height: BaseTheme.spacing[7],
-    marginLeft: BaseTheme.spacing[3]
+    marginLeft: BaseTheme.spacing[3],
+    color: BaseTheme.palette.ui06
 };
 
 const participantNameContainer = {
@@ -142,10 +143,12 @@ export default {
         display: 'flex',
         flexDirection: 'row',
         marginLeft: 'auto',
-        width: '15%'
+        width: '15%',
+        color: BaseTheme.palette.ui06
     },
 
     participantStateVideo: {
+        color: BaseTheme.palette.ui06,
         paddingRight: BaseTheme.spacing[3]
     },
 
@@ -197,7 +200,8 @@ export default {
         backgroundColor: BaseTheme.palette.ui01,
         flex: 1,
         flexDirection: 'column',
-        paddingVertical: BaseTheme.spacing[2]
+        paddingVertical: BaseTheme.spacing[2],
+        color: BaseTheme.palette.ui06
     },
 
     participantsPaneFooterContainer: {
@@ -206,7 +210,8 @@ export default {
         height: 128,
         left: 0,
         paddingHorizontal: BaseTheme.spacing[4],
-        right: 0
+        right: 0,
+        color: BaseTheme.palette.ui06
     },
 
     participantsPaneFooter: {
@@ -249,7 +254,8 @@ export default {
         borderTopRightRadius: BaseTheme.spacing[3],
         flexDirection: 'row',
         height: BaseTheme.spacing[7],
-        paddingLeft: BaseTheme.spacing[3]
+        paddingLeft: BaseTheme.spacing[3],
+        color: BaseTheme.palette.ui06
     },
 
     contextMenuItemText: {
@@ -259,11 +265,12 @@ export default {
 
     contextMenuItemTextNoIcon: {
         ...contextMenuItemText,
-        marginLeft: BaseTheme.spacing[6]
+        marginLeft: BaseTheme.spacing[6],
+        color: BaseTheme.palette.ui06
     },
 
     contextMenuItemName: {
-        color: BaseTheme.palette.text04,
+        color: BaseTheme.palette.ui06,
         flexShrink: 1,
         fontSize: BaseTheme.spacing[3],
         marginLeft: BaseTheme.spacing[3],

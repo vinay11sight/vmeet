@@ -1,4 +1,5 @@
 import { BoxModel } from '../../../base/styles/components/styles/BoxModel';
+import { ColorPalette } from '../../../base/styles/components/styles/ColorPalette';
 import BaseTheme from '../../../base/ui/components/BaseTheme.native';
 
 
@@ -29,7 +30,7 @@ const headerNavigationButton = {
 export const navigationStyles = {
 
     connectingScreenContainer: {
-        backgroundColor: BaseTheme.palette.uiBackground,
+        backgroundColor: ColorPalette.green,
         flex: 1
     },
 
