@@ -113,13 +113,16 @@ export const colorMap = {
     // High-contrast
     text04: 'surface01',
 
+    // overflowmenu
+    text05: 'primary05',
+
     // Error
     textError: 'error08',
 
     // ----- Icons -----
 
     // Primary
-    icon01: 'surface11',
+    icon01: 'primary05',
 
     // Secondary
     icon02: 'surface09',
