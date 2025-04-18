@@ -119,6 +119,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
         }
 
         case START_LOCAL_RECORDING: {
+            logger.debug('RECSAT START_LOCAL_RECORDING: execution start');
             const { localRecording } = getState()['features/base/config'];
             const { onlySelf } = action;
 
@@ -148,6 +149,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                     }
                 })
                 .catch(err => {
+                    logger.debug('RECSAT START_LOCAL_RECORDING: execution exception');
                     logger.error('Capture failed', err);
 
                     let descriptionKey = 'recording.error';
@@ -172,10 +174,12 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
 
                     dispatch(showErrorNotification(props, NOTIFICATION_TIMEOUT_TYPE.MEDIUM));
                 });
+                logger.debug('RECSAT START_LOCAL_RECORDING: execution end');
             break;
         }
 
         case STOP_LOCAL_RECORDING: {
+            logger.debug('RECSAT STOP_LOCAL_RECORDING: execution start');
             const { localRecording } = getState()['features/base/config'];
 
             if (LocalRecordingManager.isRecordingLocally()) {
@@ -189,10 +193,12 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                         false, 'local', undefined, isRecorderTranscriptionsRunning(getState()));
                 }
             }
+            logger.debug('RECSAT STOP_LOCAL_RECORDING: execution end');
             break;
         }
 
         case RECORDING_SESSION_UPDATED: {
+            logger.debug('RECSAT RECORDING_SESSION_UPDATED: execution start');
             const state = getState();
 
             // When in recorder mode no notifications are shown
@@ -297,24 +303,25 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                         false, mode, undefined, isRecorderTranscriptionsRunning(state));
                 }
             }
-
+            logger.debug('RECSAT RECORDING_SESSION_UPDATED: execution end');
             break;
         }
         case TRACK_ADDED: {
-            logger.debug('TRACK_ADDED: executed new');
-            const { track } = action;
+            logger.debug('RECSAT TRACK_ADDED: execution start');
+            // const { track } = action;
 
-            if (LocalRecordingManager.isRecordingLocally() && track.mediaType === MEDIA_TYPE.AUDIO) {
-                const audioTrack = track.jitsiTrack.track;
+            // if (LocalRecordingManager.isRecordingLocally() && track.mediaType === MEDIA_TYPE.AUDIO) {
+            //     const audioTrack = track.jitsiTrack.track;
 
-                LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
-            }
+            //     LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
+            // }
 
             setTimeout(async () => {
                 logger.debug('TRACK_ADDED: executed > setTimeout()');
+                const state = getState();
 
                 //format : 'https://room-daily.11sight.com/11sight/9116c108-6587-4b08-bfb1-7c49ca7bc1c9?c=712917'
-                const conferenceProp = getAppProp(getState(), 'url') || {};
+                const conferenceProp = getAppProp(state, 'url') || {};
 
                 const tld = '.com';
 
@@ -324,7 +331,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
 
                 let [, , , organisation] = conferenceProp.url?.split('/');
 
-                const roomName = getRoomName(getState());
+                const roomName = getRoomName(state);
 
                 logger.debug(`TRACK_ADDED: baseUrl, organisation, roomName   = ${baseUrl}, ${organisation}, ${roomName}`);
                 const res = await IISightAPI.getRoom(baseUrl, organisation, roomName);
@@ -333,9 +340,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 console.log(body);
 
                 const isVconnect = body?.room?.call?.id > 0
-                logger.debug(`TRACK_ADDED: isVconnect = ${isVconnect}`);
                 const isRecordingEnabled = body?.room?.conference_options?.auto_recording;
-                logger.debug(`TRACK_ADDED: isRecordingEnabled = ${isRecordingEnabled}`);
 
                 if (!body.status) {
                     logger.debug(`TRACK_ADDED: body not found`);
@@ -347,14 +352,14 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                     return;
                 }
 
-
-                if (getLocalParticipant(getState())?.id == 'local') {
-                    logger.debug(`TRACK_ADDED: participant_id  = ${getLocalParticipant(getState())?.id}`);
-                    //return;
-                }
-
                 if (!isRecordingEnabled) {
                     logger.debug(`TRACK_ADDED: isRecordingEnabled is false`);
+                    return;
+                }
+
+                const localParticipant = getLocalParticipant(state);
+                if (localParticipant?.id == 'local') {
+                    logger.debug(`TRACK_ADDED: participant_id  = ${localParticipant?.id}`);
                     return;
                 }
 
@@ -364,57 +369,39 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                     return;
                 }
 
-
                 const appData = JSON.stringify({
                     'file_recording_metadata': {
                         'share': true,
                         'meeting_id': body.room?.id,
                         'user_id': body.room?.user_id,
-                        'participant_id': getLocalParticipant(getState())?.id,
+                        'participant_id': localParticipant?.id,
                         'vconnect': isVconnect,
+                        'src':'mobile',
                         'call_id': body?.room?.call?.id?.toString()
                     }
                 });
 
-                logger.debug(`TRACK_ADDED: file_recording_metadata`);
                 console.log(appData);
 
-                const state = getState();
                 const conference = getCurrentConference(state);
-                //const conference = state['features/base/conference'].conference;
 
-                logger.debug(`TRACK_ADDED: conference : = ${conference}`);
-                console.log(conference);
-                console.debug(conference);
-
-
-                logger.debug(`TRACK_ADDED: activeConference : = ${activeConference}`);
-                console.log(activeConference);
-                console.debug(activeConference);
-
-               
-                if (!conference) {
+                if (conference) {
+                    conference.startRecording({
+                        mode: JitsiRecordingConstants.mode.FILE,
+                        appData
+                    });
+                    logger.debug(`TRACK_ADDED: startRecording() finished`);
+                } else {
                     logger.error('Conference is not defined');
-                    return;
                 }
-
-                if (!activeConference) {
-                    logger.error('activeConference is not defined');
-                    return;
-                }
-
-                conference.startRecording({
-                    mode: JitsiRecordingConstants.mode.FILE,
-                    appData
-                });
-                logger.debug(`TRACK_ADDED: startRecording() finished`);
-            }, 100);
+                logger.debug('RECSAT TRACK_ADDED: execution end');
+            }, 2000);
 
             break;
         }
         case TRACK_REMOVED: {
-            logger.debug(`TRACK_REMOVED: executed`);
-
+            logger.debug('RECSAT TRACK_REMOVED: execution start');
+        
             setTimeout(async () => {
                 if (activeConference && recorderSessionId) {
                     logger.debug(`TRACK_REMOVED: stopRecording() called with activeSession id  = ${recorderSessionId}`);
@@ -425,21 +412,27 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 }
             }, 100);
 
+            logger.debug('RECSAT TRACK_REMOVED: execution end');
             break;
         }
         case PARTICIPANT_UPDATED: {
+            logger.debug('RECSAT PARTICIPANT_UPDATED: execution start');
             const { id, role } = action.participant;
+            logger.debug(`PARTICIPANT_UPDATED: id  = ${id}`);
             const state = getState();
             const localParticipant = getLocalParticipant(state);
+            logger.debug(`PARTICIPANT_UPDATED: localParticipant  = ${localParticipant}`);
+            logger.debug(`PARTICIPANT_UPDATED: localParticipant id = ${localParticipant?.id}`);
 
             if (localParticipant?.id !== id) {
+                logger.debug(`PARTICIPANT_UPDATED: Participant ids match = ${id}`);
                 return next(action);
             }
 
             if (role === PARTICIPANT_ROLE.MODERATOR) {
                 dispatch(showStartRecordingNotification());
             }
-
+            logger.debug('RECSAT PARTICIPANT_UPDATED: execution end');
             return next(action);
         }
     }
