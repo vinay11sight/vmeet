@@ -28,7 +28,7 @@ const inputBar = {
  * need to extract the brand colors and sizes into a branding feature (planned
  * for the future).
  */
-export default {
+export default {  // VINAY
 
     /**
      * Background of the chat screen.

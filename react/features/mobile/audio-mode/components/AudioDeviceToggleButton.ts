@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 
 import { openSheet } from '../../../base/dialog/actions';
 import { translate } from '../../../base/i18n/functions';
-import { IconVolumeUp } from '../../../base/icons/svg';
+import { IconVolumeUpToggle } from '../../../base/icons/svg';
 import AbstractButton, { IProps as AbstractButtonProps } from '../../../base/toolbox/components/AbstractButton';
 
 import AudioRoutePickerDialog from './AudioRoutePickerDialog';
@@ -12,7 +12,7 @@ import AudioRoutePickerDialog from './AudioRoutePickerDialog';
  */
 class AudioDeviceToggleButton extends AbstractButton<AbstractButtonProps> {
     accessibilityLabel = 'toolbar.accessibilityLabel.audioRoute';
-    icon = IconVolumeUp;
+    icon = IconVolumeUpToggle;
     label = 'toolbar.accessibilityLabel.audioRoute';
 
     /**

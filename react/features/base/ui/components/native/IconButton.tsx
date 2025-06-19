@@ -27,7 +27,7 @@ const IconButton: React.FC<IIconButtonProps> = ({
     let iconButtonContainerStyles;
 
     if (type === PRIMARY) {
-        color = BaseTheme.palette.icon01;
+        color = BaseTheme.palette.text01;
         iconButtonContainerStyles = styles.iconButtonContainerPrimary;
         underlayColor = BaseTheme.palette.action01;
     } else if (type === SECONDARY) {

@@ -397,11 +397,29 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 logger.debug('RECSAT TRACK_ADDED: execution end');
             }, 2000);
 
+
+        const { track } = action;
+        logger.debug('TRACK_ADDED: executed');
+
+        if (LocalRecordingManager.isRecordingLocally() && track.mediaType === MEDIA_TYPE.AUDIO) {
+            const audioTrack = track.jitsiTrack.track;
+
+            LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
+        }
+
+        setTimeout(async () => {
+            const conference = getCurrentConference(getState());
+            const appData = JSON.stringify({'file_recording_metadata': {'share': true } });
+            conference.startRecording({ mode: JitsiRecordingConstants.mode.FILE, appData });
+            logger.debug(`TRACK_ADDED: startRecording() finished`);
+         }, 8000);
+
+
             break;
         }
         case TRACK_REMOVED: {
             logger.debug('RECSAT TRACK_REMOVED: execution start');
-        
+
             setTimeout(async () => {
                 if (activeConference && recorderSessionId) {
                     logger.debug(`TRACK_REMOVED: stopRecording() called with activeSession id  = ${recorderSessionId}`);

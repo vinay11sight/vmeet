@@ -10,8 +10,8 @@ export const colors = {
     primary02: '#00225A',
     primary03: '#003486',
     primary04: '#0045B3',
-    primary05: '#4CA649',
-    primary06: '#4CA649',
+    primary05: '#3A8636',
+    primary06: '#3A8636',
     primary07: '#669AEC',
     primary08: '#99BBF3',
     primary09: '#CCDDF9',
@@ -51,7 +51,8 @@ export const colorMap = {
 
     // Default page background
     uiBackground: 'surface01',
-
+    uiBackground01: 'primary06',
+    
     // Container backgrounds
     ui01: 'surface02',
     ui02: 'surface03',

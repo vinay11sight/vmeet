@@ -84,7 +84,7 @@ export const presentationScreenOptions = {
     headerLeft: () => screenHeaderCloseButton(goBack),
     headerStatusBarHeight: 0,
     headerStyle: {
-        backgroundColor: BaseTheme.palette.ui01
+        backgroundColor: BaseTheme.palette.uiBackground01 // chat screen toolbar bg
     },
     headerTitleStyle: {
         color: BaseTheme.palette.text01
