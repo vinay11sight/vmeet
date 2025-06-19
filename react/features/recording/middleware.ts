@@ -308,13 +308,13 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
         }
         case TRACK_ADDED: {
             logger.debug('RECSAT TRACK_ADDED: execution start');
-            const { track } = action;
-
-            if (LocalRecordingManager.isRecordingLocally() && track.mediaType === MEDIA_TYPE.AUDIO) {
-                const audioTrack = track.jitsiTrack.track;
-
-                LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
-            }
+//             const { track } = action;
+//
+//             if (LocalRecordingManager.isRecordingLocally() && track.mediaType === MEDIA_TYPE.AUDIO) {
+//                 const audioTrack = track.jitsiTrack.track;
+//
+//                 LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
+//             }
 
             setTimeout(async () => {
                 logger.debug('TRACK_ADDED: executed > setTimeout()');
