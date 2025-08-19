@@ -42,7 +42,8 @@ export const colors = {
     support06: '#6A50D3',
     support07: '#4380E2',
     support08: '#00A8B3',
-    support09: '#2AA076'
+    support09: '#2AA076',
+    support10: '#b4c5b3ff'
 };
 
 // Mapping between the token used and the color
@@ -65,6 +66,7 @@ export const colorMap = {
     ui09: 'surface10',
     ui10: 'surface11',
     ui11: 'primary06',
+    ui12: 'support10',
 
     // ----- Actions -----
 

@@ -63,7 +63,7 @@ export default {  // VINAY
     },
 
     remoteMessageBubble: {
-        backgroundColor: BaseTheme.palette.ui02,
+        backgroundColor: BaseTheme.palette.ui12,
         borderTopLeftRadius: 0
     },
 
@@ -95,7 +95,7 @@ export default {  // VINAY
 
     chatMessage: {
         ...BaseTheme.typography.bodyShortRegular,
-        color: BaseTheme.palette.text01
+        color: BaseTheme.palette.text04
     },
 
     /**
@@ -228,11 +228,11 @@ export default {  // VINAY
 
     senderDisplayName: {
         ...BaseTheme.typography.bodyShortBold,
-        color: BaseTheme.palette.text02
+        color: BaseTheme.palette.text04
     },
 
     localMessageBubble: {
-        backgroundColor: BaseTheme.palette.ui04,
+        backgroundColor: BaseTheme.palette.ui09,
         borderTopRightRadius: 0
     },
 
@@ -252,7 +252,7 @@ export default {  // VINAY
 
     messageRecipientText: {
         ...BaseTheme.typography.bodyShortRegular,
-        color: BaseTheme.palette.text01,
+        color: BaseTheme.palette.text04,
         flex: 1
     }
 };
