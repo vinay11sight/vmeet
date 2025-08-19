@@ -67,12 +67,12 @@ pushd ${THIS_DIR}/../
 popd
 
 # The artifacts are now on the Maven repo, commit them
-if [[ $MVN_HTTP == 0 ]]; then
-    pushd ${MVN_REPO_PATH}
-    git add -A .
-    git commit -m "Jitsi Meet SDK + dependencies: ${SDK_VERSION}"
-    popd
-fi
+#if [[ $MVN_HTTP == 0 ]]; then
+#    pushd ${MVN_REPO_PATH}
+#    git add -A .
+#    git commit -m "Jitsi Meet SDK + dependencies: ${SDK_VERSION}"
+#    popd
+#fi
 
 # Done!
 echo "Finished! Don't forget to push the tag and the Maven repo artifacts."
