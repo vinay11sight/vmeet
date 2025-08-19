@@ -307,7 +307,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
             break;
         }
         case TRACK_ADDED: {
-            logger.debug('RECSAT TRACK_ADDED: execution start');
+            logger.debug('RECSAT TRACK_ADDED: called');
 //             const { track } = action;
 //
 //             if (LocalRecordingManager.isRecordingLocally() && track.mediaType === MEDIA_TYPE.AUDIO) {
@@ -317,7 +317,6 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
 //             }
 
             setTimeout(async () => {
-                logger.debug('TRACK_ADDED: executed > setTimeout()');
                 const state = getState();
 
                 //format : 'https://room-daily.11sight.com/11sight/9116c108-6587-4b08-bfb1-7c49ca7bc1c9?c=712917'
@@ -342,31 +341,33 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 const isVconnect = body?.room?.call?.id > 0
                 const isRecordingEnabled = body?.room?.conference_options?.auto_recording;
 
+                var eligibleToRecord = true;
+
                 if (!body.status) {
-                    logger.debug(`TRACK_ADDED: body not found`);
-                    return;
+                    logger.debug(`TRACK_ADDED: status is false in the getRoom api response`);
+                    eligibleToRecord = false;
                 }
 
                 if (!isVconnect) {
-                    logger.debug(`TRACK_ADDED: isVconnect not found`);
-                    return;
+                    logger.debug(`TRACK_ADDED: isVconnect is false`);
+                    eligibleToRecord = false;
                 }
 
                 if (!isRecordingEnabled) {
                     logger.debug(`TRACK_ADDED: isRecordingEnabled is false`);
-                    return;
+                    eligibleToRecord = false;
                 }
 
                 const localParticipant = getLocalParticipant(state);
                 if (localParticipant?.id == 'local') {
                     logger.debug(`TRACK_ADDED: participant_id  = ${localParticipant?.id}`);
-                    return;
+                    eligibleToRecord = false;
                 }
 
                 if (body.room?.conference_options?.remaining_recording_limit == 0) {
                     logger.debug(`TRACK_ADDED: body.room?.conference_options-> ${body.room?.conference_options} `);
                     logger.debug(`TRACK_ADDED: body.room?.conference_options?.remaining_recording_limit-> ${body.room?.conference_options?.remaining_recording_limit} `);
-                    return;
+                    eligibleToRecord = false;
                 }
 
                 const appData = JSON.stringify({
@@ -385,17 +386,22 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
 
                 const conference = getCurrentConference(state);
 
-                if (conference) {
+                if (conference && eligibleToRecord) {
                     conference.startRecording({
                         mode: JitsiRecordingConstants.mode.FILE,
                         appData
                     });
-                    logger.debug(`TRACK_ADDED: startRecording() finished`);
+                    logger.debug(`TRACK_ADDED: startRecording() called`);
                 } else {
-                    logger.error('Conference is not defined');
+                    if (eligibleToRecord){
+                        logger.debug(`TRACK_ADDED: Conference is not defined`);
+                    } else {
+                        logger.debug(`TRACK_ADDED: eligibleToRecord is false`);
+                    }
                 }
-                logger.debug('RECSAT TRACK_ADDED: execution end');
-            }, 2000);
+                logger.debug('RECSAT TRACK_ADDED: finished');
+            }, 5000);
+
             break;
         }
         case TRACK_REMOVED: {
