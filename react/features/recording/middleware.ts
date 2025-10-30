@@ -370,21 +370,21 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                     eligibleToRecord = false;
                 }
 
+                const conference = getCurrentConference(state);
+                logger.debug(`TRACK_ADDED: meeting_id = ${conference?.getMeetingUniqueId()}`);
+
                 const appData = JSON.stringify({
                     'file_recording_metadata': {
                         'share': true,
-                        'meeting_id': body.room?.id,
+                        'meeting_id': conference?.getMeetingUniqueId(),
                         'user_id': body.room?.user_id,
                         'participant_id': localParticipant?.id,
                         'vconnect': isVconnect,
-                        'src':'mobile',
                         'call_id': body?.room?.call?.id?.toString()
                     }
                 });
 
                 console.log(appData);
-
-                const conference = getCurrentConference(state);
 
                 if (conference && eligibleToRecord) {
                     conference.startRecording({
@@ -399,7 +399,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                         logger.debug(`TRACK_ADDED: eligibleToRecord is false`);
                     }
                 }
-                logger.debug('RECSAT TRACK_ADDED: finished');
+                logger.debug('TRACK_ADDED: finished');
             }, 5000);
 
             break;
