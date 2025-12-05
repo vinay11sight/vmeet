@@ -779,6 +779,19 @@ export function hasRaisedHand(participant?: IParticipant): boolean {
     return Boolean(participant?.raisedHandTimestamp);
 }
 
+export function isValidAttachmentJson(str) {
+    try {
+        const json = JSON.parse(str);
+        const attachment = json?.attachment;
+        if (attachment && attachment.name && attachment.url) {
+            return true;
+        }
+    } catch (e) {
+        return false;
+    }
+    return false;
+}
+
 /**
  * Add people feature enabling/disabling.
  *

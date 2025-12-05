@@ -134,7 +134,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                     };
 
                     if (localRecording?.notifyAllParticipants && !onlySelf) {
-                        dispatch(playSound(RECORDING_ON_SOUND_ID));
+                        //dispatch(playSound(RECORDING_ON_SOUND_ID));
                     }
                     dispatch(showNotification(props, NOTIFICATION_TIMEOUT_TYPE.MEDIUM));
                     dispatch(showNotification({
@@ -183,7 +183,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 LocalRecordingManager.stopLocalRecording();
                 dispatch(updateLocalRecordingStatus(false));
                 if (localRecording?.notifyAllParticipants && !LocalRecordingManager.selfRecording) {
-                    dispatch(playSound(RECORDING_OFF_SOUND_ID));
+                    //dispatch(playSound(RECORDING_OFF_SOUND_ID));
                 }
                 if (typeof APP !== 'undefined') {
                     APP.API.notifyRecordingStatusChanged(
@@ -250,7 +250,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                     }
 
                     if (soundID) {
-                        dispatch(playSound(soundID));
+                        //dispatch(playSound(soundID));
                     }
 
                     if (typeof APP !== 'undefined') {
@@ -282,8 +282,8 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 }
 
                 if (soundOff && soundOn) {
-                    dispatch(stopSound(soundOn));
-                    dispatch(playSound(soundOff));
+                    //dispatch(stopSound(soundOn));
+                    //dispatch(playSound(soundOff));
                 }
 
                 if (typeof APP !== 'undefined') {
@@ -444,22 +444,22 @@ function _showRecordingErrorNotification(session: any, dispatch: IStore['dispatc
             }));
             break;
         case JitsiMeetJS.constants.recording.error.UNEXPECTED_REQUEST:
-            dispatch(showRecordingWarning({
-                descriptionKey: isStreamMode
-                    ? 'liveStreaming.sessionAlreadyActive'
-                    : 'recording.sessionAlreadyActive',
-                titleKey: isStreamMode ? 'liveStreaming.inProgress' : 'recording.inProgress'
-            }));
+            // dispatch(showRecordingWarning({
+            //     descriptionKey: isStreamMode
+            //         ? 'liveStreaming.sessionAlreadyActive'
+            //         : 'recording.sessionAlreadyActive',
+            //     titleKey: isStreamMode ? 'liveStreaming.inProgress' : 'recording.inProgress'
+            // }));
             break;
         default:
-            dispatch(showRecordingError({
-                descriptionKey: isStreamMode
-                    ? 'liveStreaming.error'
-                    : 'recording.error',
-                titleKey: isStreamMode
-                    ? 'liveStreaming.failedToStart'
-                    : 'recording.failedToStart'
-            }));
+            // dispatch(showRecordingError({
+            //     descriptionKey: isStreamMode
+            //         ? 'liveStreaming.error'
+            //         : 'recording.error',
+            //     titleKey: isStreamMode
+            //         ? 'liveStreaming.failedToStart'
+            //         : 'recording.failedToStart'
+            // }));
             break;
     }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableHighlight } from 'react-native';
+import { TouchableHighlight, ViewStyle } from 'react-native';
 
 import Icon from '../../../icons/components/Icon';
 import styles from '../../../react/components/native/styles';
@@ -27,7 +27,7 @@ const IconButton: React.FC<IIconButtonProps> = ({
     let iconButtonContainerStyles;
 
     if (type === PRIMARY) {
-        color = BaseTheme.palette.icon01;
+        color = BaseTheme.palette.text01;
         iconButtonContainerStyles = styles.iconButtonContainerPrimary;
         underlayColor = BaseTheme.palette.action01;
     } else if (type === SECONDARY) {
@@ -58,7 +58,7 @@ const IconButton: React.FC<IIconButtonProps> = ({
             style = { [
                 iconButtonContainerStyles,
                 style
-            ] }
+            ] as ViewStyle }
             underlayColor = { underlayColor }>
             <Icon
                 color = { color }

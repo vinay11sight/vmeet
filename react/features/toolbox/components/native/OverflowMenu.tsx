@@ -34,6 +34,7 @@ import LinkToSalesforceButton from './LinkToSalesforceButton';
 import OpenCarmodeButton from './OpenCarmodeButton';
 import RaiseHandButton from './RaiseHandButton';
 import ScreenSharingButton from './ScreenSharingButton';
+import MoreOptionsButton from './MoreOptionsButton';
 
 
 /**
@@ -133,11 +134,18 @@ class OverflowMenu extends PureComponent<IProps, IState> {
             dispatch
         } = this.props;
         const toolbarButtons = getMovableButtons(_width);
+        const { showMore } = this.state;
 
         const buttonProps = {
             afterClick: this._onCancel,
             showLabel: true,
             styles: bottomSheetStyles.buttons
+        };
+
+        const moreOptionsButtonProps = {
+            ...buttonProps,
+            afterClick: this._onToggleMenu,
+            visible: !showMore
         };
 
         const topButtonProps = {
@@ -156,35 +164,27 @@ class OverflowMenu extends PureComponent<IProps, IState> {
 
         return (
             <BottomSheet
-                renderFooter = { _shouldDisplayReactionsButtons && !toolbarButtons.has('raisehand')
-                    ? this._renderReactionMenu
-                    : undefined }>
+                renderFooter = { null }>
                 { this._renderCustomOverflowMenuButtons(topButtonProps) }
                 <OpenCarmodeButton { ...topButtonProps } />
                 <AudioOnlyButton { ...buttonProps } />
-                {
-                    !_shouldDisplayReactionsButtons && !toolbarButtons.has('raisehand')
-                        && <RaiseHandButton { ...buttonProps } />
-                }
                 {/* @ts-ignore */}
                 <Divider style = { styles.divider as ViewStyle } />
                 <SecurityDialogButton { ...buttonProps } />
                 <RecordButton { ...buttonProps } />
-                <LiveStreamButton { ...buttonProps } />
                 <LinkToSalesforceButton { ...buttonProps } />
                 <WhiteboardButton { ...buttonProps } />
                 {/* @ts-ignore */}
                 <Divider style = { styles.divider as ViewStyle } />
                 {_isSharedVideoEnabled && <SharedVideoButton { ...buttonProps } />}
                 {!toolbarButtons.has('screensharing') && <ScreenSharingButton { ...buttonProps } />}
-                {!_isSpeakerStatsDisabled && <SpeakerStatsButton { ...buttonProps } />}
                 {!toolbarButtons.has('tileview') && <TileViewButton { ...buttonProps } />}
+                {!_isSpeakerStatsDisabled && <SpeakerStatsButton { ...buttonProps } />}
                 {_isBreakoutRoomsSupported && <BreakoutRoomsButton { ...buttonProps } />}
                 {/* @ts-ignore */}
                 <Divider style = { styles.divider as ViewStyle } />
                 <ClosedCaptionButton { ...buttonProps } />
-                <SharedDocumentButton { ...buttonProps } />
-                <SettingsButton { ...buttonProps } />
+                {/* <SettingsButton { ...buttonProps } /> // hide settings button */}
             </BottomSheet>
         );
     }

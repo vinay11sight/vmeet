@@ -10,15 +10,15 @@ export const colors = {
     primary02: '#00225A',
     primary03: '#003486',
     primary04: '#0045B3',
-    primary05: '#0056E0',
-    primary06: '#246FE5',
-    primary07: '#4687ED',
+    primary05: '#3A8636',
+    primary06: '#3A8636',
+    primary07: '#669AEC',
     primary08: '#99BBF3',
     primary09: '#CCDDF9',
 
     surface01: '#040404',
     surface02: '#141414',
-    surface03: '#292929',
+    surface03: '#FFFFFF',
     surface04: '#3D3D3D',
     surface05: '#525252',
     surface06: '#666',
@@ -42,7 +42,8 @@ export const colors = {
     support06: '#6A50D3',
     support07: '#4380E2',
     support08: '#00A8B3',
-    support09: '#2AA076'
+    support09: '#2AA076',
+    support10: '#b4c5b3ff'
 };
 
 // Mapping between the token used and the color
@@ -51,6 +52,7 @@ export const colorMap = {
 
     // Default page background
     uiBackground: 'surface01',
+    uiBackground01: 'primary06',
 
     // Container backgrounds
     ui01: 'surface02',
@@ -63,6 +65,8 @@ export const colorMap = {
     ui08: 'surface09',
     ui09: 'surface10',
     ui10: 'surface11',
+    ui11: 'primary06',
+    ui12: 'support10',
 
     // ----- Actions -----
 
@@ -112,13 +116,16 @@ export const colorMap = {
     // High-contrast
     text04: 'surface01',
 
+    // overflowmenu
+    text05: 'primary05',
+
     // Error
     textError: 'error08',
 
     // ----- Icons -----
 
     // Primary
-    icon01: 'surface11',
+    icon01: 'primary05',
 
     // Secondary
     icon02: 'surface09',
