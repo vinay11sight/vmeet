@@ -19,7 +19,8 @@ import { PARTICIPANT_JOINED, PARTICIPANT_LEFT, PARTICIPANT_UPDATED } from '../ba
 import {
     getLocalParticipant,
     getParticipantById,
-    getParticipantDisplayName
+    getParticipantDisplayName,
+    isValidAttachmentJson
 } from '../base/participants/functions';
 import { IParticipant } from '../base/participants/types';
 import MiddlewareRegistry from '../base/redux/MiddlewareRegistry';
@@ -406,6 +407,17 @@ function _addChatMsgListener(conference: IJitsiConference, store: IStore) {
     );
 
     conference.on(
+        JitsiConferenceEvents.REACTION_RECEIVED,
+        (participantId: string, reactionList: string[], messageId: string) => {
+            _onReactionReceived(store, {
+                participantId,
+                reactionList,
+                messageId
+            });
+        }
+    );
+
+    conference.on(
         JitsiConferenceEvents.PRIVATE_MESSAGE_RECEIVED,
         (participantId: string, message: string, timestamp: number, messageId: string, displayName?: string, isFromVisitor?: boolean) => {
             _onConferenceMessageReceived(store, {
@@ -458,6 +470,27 @@ function _onConferenceMessageReceived(store: IStore,
         messageId,
         source
     }, true, isGif);
+}
+
+/**
+ * Handles a received reaction.
+ *
+ * @param {Object} store - Redux store.
+ * @param {string} participantId - Id of the participant that sent the message.
+ * @param {string} reactionList - The list of received reactions.
+ * @param {string} messageId - The id of the message that the reaction is for.
+ * @returns {void}
+ */
+function _onReactionReceived(store: IStore, { participantId, reactionList, messageId }: {
+    messageId: string; participantId: string; reactionList: string[]; }) {
+
+    const reactionPayload = {
+        participantId,
+        reactionList,
+        messageId
+    };
+
+    store.dispatch(addMessageReaction(reactionPayload));
 }
 
 /**
@@ -632,6 +665,10 @@ function _handleReceivedMessage({ dispatch, getState }: IStore,
     }
 
     if (shouldShowNotification) {
+        if (isValidAttachmentJson(message)) {
+            const messageJson = JSON.parse(message);
+            message = messageJson.attachment.name;
+        }
         dispatch(showMessageNotification({
             title: notificationDisplayName,
             description: message,

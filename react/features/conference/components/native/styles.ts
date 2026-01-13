@@ -66,7 +66,7 @@ export default {
 
     titleBarButton: {
         iconStyle: {
-            color: BaseTheme.palette.icon01,
+            color: BaseTheme.palette.text01,
             padding: 12,
             fontSize: TITLE_BAR_BUTTON_SIZE
         },
@@ -118,7 +118,8 @@ export default {
         flex: 1,
         flexDirection: 'row',
         height: BaseTheme.spacing[8],
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: BaseTheme.palette.uiBackground01
     },
 
     alwaysOnTitleBar: {
@@ -159,7 +160,7 @@ export default {
     },
 
     roomNameView: {
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        backgroundColor: 'transparent',
         borderBottomLeftRadius: 3,
         borderTopLeftRadius: 3,
         flexShrink: 1,

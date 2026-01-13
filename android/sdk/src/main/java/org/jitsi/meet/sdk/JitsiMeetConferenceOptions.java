@@ -42,6 +42,10 @@ public class JitsiMeetConferenceOptions implements Parcelable {
      */
     private String room;
     /**
+     * 11 Apis base url.
+     */
+    private String elevenBaseUrl;
+    /**
      * JWT token used for authentication.
      */
     private String token;
@@ -69,6 +73,10 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         return room;
     }
 
+    public String get11BaseUrl() {
+        return elevenBaseUrl;
+    }
+
     public String getToken() {
         return token;
     }
@@ -87,6 +95,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     public static class Builder {
         private URL serverURL;
         private String room;
+        private String elevenBaseUrl;
         private String token;
 
         private Bundle config;
@@ -118,6 +127,11 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         public Builder setRoom(String room) {
             this.room = room;
 
+            return this;
+        }
+
+        public Builder set11BaseUrl(String elevenBaseUrl) {
+            this.elevenBaseUrl = elevenBaseUrl;
             return this;
         }
 
@@ -246,6 +260,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
 
             options.serverURL = this.serverURL;
             options.room = this.room;
+            options.elevenBaseUrl = this.elevenBaseUrl;
             options.token = this.token;
             options.config = this.config;
             options.featureFlags = this.featureFlags;
@@ -261,6 +276,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     private JitsiMeetConferenceOptions(Parcel in) {
         serverURL = (URL) in.readSerializable();
         room = in.readString();
+        elevenBaseUrl = in.readString();
         token = in.readString();
         config = in.readBundle();
         featureFlags = in.readBundle();
@@ -284,6 +300,10 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             if (room != null) {
                 urlProps.putString("room", room);
             }
+        }
+
+        if (elevenBaseUrl != null) {
+            urlProps.putString("elevenBaseUrl", elevenBaseUrl);
         }
 
         if (token != null) {
@@ -319,6 +339,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeSerializable(serverURL);
         dest.writeString(room);
+        dest.writeString(elevenBaseUrl);
         dest.writeString(token);
         dest.writeBundle(config);
         dest.writeBundle(featureFlags);

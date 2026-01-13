@@ -27,7 +27,7 @@ const brandedDialogText = {
 };
 
 const brandedDialogLabelStyle = {
-    color: BaseTheme.palette.text01,
+    color: BaseTheme.palette.text05,
     flexShrink: 1,
     fontSize: MD_FONT_SIZE,
     opacity: 0.90

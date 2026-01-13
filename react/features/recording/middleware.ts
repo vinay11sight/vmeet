@@ -5,7 +5,7 @@ import { sendAnalytics } from '../analytics/functions';
 import { IStore } from '../app/types';
 import { APP_WILL_MOUNT, APP_WILL_UNMOUNT } from '../base/app/actionTypes';
 import { CONFERENCE_JOIN_IN_PROGRESS } from '../base/conference/actionTypes';
-import { getCurrentConference } from '../base/conference/functions';
+import { getCurrentConference, getRoomName } from '../base/conference/functions';
 import { openDialog } from '../base/dialog/actions';
 import JitsiMeetJS, {
     JitsiConferenceEvents,
@@ -28,7 +28,7 @@ import {
     playSound,
     stopSound
 } from '../base/sounds/actions';
-import { TRACK_ADDED } from '../base/tracks/actionTypes';
+import { TRACK_ADDED, TRACK_REMOVED } from '../base/tracks/actionTypes';
 import { hideNotification, showErrorNotification, showNotification } from '../notifications/actions';
 import { NOTIFICATION_TIMEOUT_TYPE } from '../notifications/constants';
 import { isRecorderTranscriptionsRunning } from '../transcribing/functions';
@@ -61,9 +61,17 @@ import {
     getSessionById,
     registerRecordingAudioFiles,
     shouldRequireRecordingConsent,
-    unregisterRecordingAudioFiles
+    unregisterRecordingAudioFiles,
+    isLiveStreamingRunning,
+    isRecordingRunning
 } from './functions';
 import logger from './logger';
+import * as IISightAPI from '../../helpers/api';
+import { getAppProp } from '../base/app/functions';
+import { IJitsiConference } from '../base/conference/reducer';
+
+let recorderSessionId;
+let activeConference: IJitsiConference | undefined;
 
 /**
  * StateListenerRegistry provides a reliable way to detect the leaving of a
@@ -71,7 +79,7 @@ import logger from './logger';
  */
 StateListenerRegistry.register(
     /* selector */ state => getCurrentConference(state),
-    /* listener */ (conference, { dispatch }) => {
+    /* listener */(conference, { dispatch }) => {
         if (!conference) {
             dispatch(clearRecordingSessions());
         }
@@ -105,13 +113,15 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
 
         break;
 
-    case CONFERENCE_JOIN_IN_PROGRESS: {
-        const { conference } = action;
+        case CONFERENCE_JOIN_IN_PROGRESS: {
+            const { conference } = action;
+            activeConference = conference;
 
         conference.on(
             JitsiConferenceEvents.RECORDER_STATE_CHANGED,
             (recorderSession: any) => {
                 if (recorderSession) {
+                    recorderSessionId = recorderSession.getID();
                     recorderSession.getID() && dispatch(updateRecordingSessionData(recorderSession));
                     if (recorderSession.getError()) {
                         _showRecordingErrorNotification(recorderSession, dispatch, getState);
@@ -141,7 +151,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
             };
 
             if (localRecording?.notifyAllParticipants && !onlySelf) {
-                dispatch(playSound(RECORDING_ON_SOUND_ID));
+                //dispatch(playSound(RECORDING_ON_SOUND_ID));
             }
             dispatch(showNotification(props, NOTIFICATION_TIMEOUT_TYPE.MEDIUM));
             dispatch(showNotification({
@@ -183,39 +193,39 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
         break;
     }
 
-    case STOP_LOCAL_RECORDING: {
-        const { localRecording } = getState()['features/base/config'];
+        case STOP_LOCAL_RECORDING: {
+            const { localRecording } = getState()['features/base/config'];
 
-        if (LocalRecordingManager.isRecordingLocally()) {
-            LocalRecordingManager.stopLocalRecording();
-            dispatch(updateLocalRecordingStatus(false));
-            if (localRecording?.notifyAllParticipants && !LocalRecordingManager.selfRecording) {
-                dispatch(playSound(RECORDING_OFF_SOUND_ID));
+            if (LocalRecordingManager.isRecordingLocally()) {
+                LocalRecordingManager.stopLocalRecording();
+                dispatch(updateLocalRecordingStatus(false));
+                if (localRecording?.notifyAllParticipants && !LocalRecordingManager.selfRecording) {
+                    //dispatch(playSound(RECORDING_OFF_SOUND_ID));
+                }
+                if (typeof APP !== 'undefined') {
+                    APP.API.notifyRecordingStatusChanged(
+                        false, 'local', undefined, isRecorderTranscriptionsRunning(getState()));
+                }
             }
-            if (typeof APP !== 'undefined') {
-                APP.API.notifyRecordingStatusChanged(
-                    false, 'local', undefined, isRecorderTranscriptionsRunning(getState()));
-            }
+            break;
         }
-        break;
-    }
 
-    case RECORDING_SESSION_UPDATED: {
-        const state = getState();
+        case RECORDING_SESSION_UPDATED: {
+            const state = getState();
 
-        // When in recorder mode no notifications are shown
-        // or extra sounds are also not desired
-        // but we want to indicate those in case of sip gateway
-        const {
-            iAmRecorder,
-            iAmSipGateway,
-            recordingLimit
-        } = state['features/base/config'];
+            // When in recorder mode no notifications are shown
+            // or extra sounds are also not desired
+            // but we want to indicate those in case of sip gateway
+            const {
+                iAmRecorder,
+                iAmSipGateway,
+                recordingLimit
+            } = state['features/base/config'];
 
         if (iAmRecorder && !iAmSipGateway) {
             break;
         }
-
+        activeConference = getCurrentConference(getState());
         const updatedSessionData
             = getSessionById(state, action.sessionData.id);
         const { initiator, mode = '', terminator } = updatedSessionData ?? {};
@@ -261,7 +271,7 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 }
 
                 if (soundID) {
-                    dispatch(playSound(soundID));
+                    //dispatch(playSound(soundID));
                 }
 
                 if (typeof APP !== 'undefined') {
@@ -293,8 +303,8 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
             }
 
             if (soundOff && soundOn) {
-                dispatch(stopSound(soundOn));
-                dispatch(playSound(soundOff));
+                //dispatch(stopSound(soundOn));
+                //dispatch(playSound(soundOff));
             }
 
             if (typeof APP !== 'undefined') {
@@ -312,25 +322,100 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
                 && track.mediaType === MEDIA_TYPE.AUDIO && track.local) {
             const audioTrack = track.jitsiTrack.track;
 
-            LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
-        }
-        break;
-    }
-    case PARTICIPANT_UPDATED: {
-        const { id, role } = action.participant;
-        const state = getState();
-        const localParticipant = getLocalParticipant(state);
+                    LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
+                }
+                //format : 'https://room-daily.11sight.com/11sight/9116c108-6587-4b08-bfb1-7c49ca7bc1c9?c=712917'
+                const conferenceProp = getAppProp(state, 'url') || {};
+                const tld = '.com';
+                let [baseUrl,] = conferenceProp.url?.split(tld);
+                baseUrl = baseUrl + tld;
+                let [, , , organisation] = conferenceProp.url?.split('/');
+                const roomName = getRoomName(state);
+                logger.debug(`TRACK_ADDED: baseUrl, organisation, roomName   = ${baseUrl}, ${organisation}, ${roomName}`);
 
-        if (localParticipant?.id !== id) {
+                const res = await IISightAPI.getRoom(baseUrl, organisation, roomName);
+                const body = await res.json();
+                logger.debug(`TRACK_ADDED: getRoom() response body : = ${body}`);
+                console.log(body);
+
+                const isVconnect = body?.room?.call?.id > 0
+                const isRecordingEnabled = body?.room?.conference_options?.auto_recording;
+                var eligibleToRecord = true;
+
+                if (!body.status) {
+                    logger.debug(`TRACK_ADDED: status is false in the getRoom api response`);
+                    eligibleToRecord = false;
+                }
+
+                if (!isVconnect) {
+                    logger.debug(`TRACK_ADDED: isVconnect is false`);
+                    eligibleToRecord = false;
+                }
+
+                if (!isRecordingEnabled) {
+                    logger.debug(`TRACK_ADDED: isRecordingEnabled is false`);
+                    eligibleToRecord = false;
+                }
+
+                const localParticipant = getLocalParticipant(state);
+                if (localParticipant?.id == 'local') {
+                    logger.debug(`TRACK_ADDED: participant_id  = ${localParticipant?.id}`);
+                    eligibleToRecord = false;
+                }
+
+                if (body.room?.conference_options?.remaining_recording_limit == 0) {
+                    eligibleToRecord = false;
+                }
+
+                const appData = JSON.stringify({
+                    'file_recording_metadata': {
+                        'share': true,
+                        'meeting_id': activeConference?.getMeetingUniqueId(),
+                        'user_id': body.room?.user_id,
+                        'participant_id': localParticipant?.id,
+                        'vconnect': isVconnect,
+                        'call_id': body?.room?.call?.id?.toString()
+                    }
+                });
+                console.log(appData);
+
+                const isAlreadyRecording = isRecordingRunning(state) || isRecorderTranscriptionsRunning(state);
+                if (!isAlreadyRecording && activeConference && eligibleToRecord) {
+                    activeConference?.startRecording({ mode: JitsiRecordingConstants.mode.FILE, appData });
+                    logger.debug(`TRACK_ADDED: startRecording() executed`);
+                } else {
+                    logger.debug(`TRACK_ADDED: isAlreadyRecording, activeConference, eligibleToRecord   = ${isAlreadyRecording}, ${activeConference}, ${eligibleToRecord}`);
+                }
+            }, 5000);
+            break;
+        }
+        case TRACK_REMOVED: {
+            setTimeout(async () => {
+                if (activeConference && recorderSessionId!) {
+                    activeConference?.stopRecording(recorderSessionId);
+                    logger.debug(`TRACK_REMOVED: stopRecording() executed with activeSession id  = ${recorderSessionId}`);
+                } else {
+                    logger.debug('TRACK_REMOVED: unable to stop recording');
+                    logger.debug(`TRACK_REMOVED: activeConference, recorderSessionId = ${activeConference}, ${recorderSessionId!}`);
+                }
+            }, 2000);
+            break;
+        }
+        case PARTICIPANT_UPDATED: {
+            const { id, role } = action.participant;
+            const state = getState();
+            const localParticipant = getLocalParticipant(state);
+
+            if (localParticipant?.id !== id) {
+                return next(action);
+            }
+
+            if (role === PARTICIPANT_ROLE.MODERATOR) {
+                dispatch(showStartRecordingNotification());
+            }
+
             return next(action);
         }
-
-        if (role === PARTICIPANT_ROLE.MODERATOR) {
-            dispatch(showStartRecordingNotification());
-        }
-
-        return next(action);
-    }
     }
 
     return result;
@@ -378,12 +463,12 @@ function _showRecordingErrorNotification(session: any, dispatch: IStore['dispatc
         }));
         break;
     case JitsiMeetJS.constants.recording.error.UNEXPECTED_REQUEST:
-        dispatch(showRecordingWarning({
-            descriptionKey: isStreamMode
-                ? 'liveStreaming.sessionAlreadyActive'
-                : 'recording.sessionAlreadyActive',
-            titleKey: isStreamMode ? 'liveStreaming.inProgress' : 'recording.inProgress'
-        }));
+//         dispatch(showRecordingWarning({
+//             descriptionKey: isStreamMode
+//                 ? 'liveStreaming.sessionAlreadyActive'
+//                 : 'recording.sessionAlreadyActive',
+//             titleKey: isStreamMode ? 'liveStreaming.inProgress' : 'recording.inProgress'
+//         }));
         break;
     case JitsiMeetJS.constants.recording.error.POLICY_VIOLATION:
         dispatch(showRecordingWarning({
@@ -392,14 +477,14 @@ function _showRecordingErrorNotification(session: any, dispatch: IStore['dispatc
         }));
         break;
     default:
-        dispatch(showRecordingError({
-            descriptionKey: isStreamMode
-                ? 'liveStreaming.error'
-                : 'recording.error',
-            titleKey: isStreamMode
-                ? 'liveStreaming.failedToStart'
-                : 'recording.failedToStart'
-        }));
+//         dispatch(showRecordingError({
+//             descriptionKey: isStreamMode
+//                 ? 'liveStreaming.error'
+//                 : 'recording.error',
+//             titleKey: isStreamMode
+//                 ? 'liveStreaming.failedToStart'
+//                 : 'recording.failedToStart'
+//         }));
         break;
     }
 

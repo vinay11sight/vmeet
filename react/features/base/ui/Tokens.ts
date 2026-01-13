@@ -1,3 +1,51 @@
+// Default color palette
+export const colors = {
+    error03: '#7A141F',
+    error04: '#A21B29',
+    error05: '#CB2233',
+    error06: '#D83848',
+    error08: '#F24D5F',
+
+    primary01: '#00112D',
+    primary02: '#00225A',
+    primary03: '#003486',
+    primary04: '#0045B3',
+    primary05: '#3A8636',
+    primary06: '#3A8636',
+    primary07: '#669AEC',
+    primary08: '#99BBF3',
+    primary09: '#CCDDF9',
+
+    surface01: '#040404',
+    surface02: '#141414',
+    surface03: '#FFFFFF',
+    surface04: '#3D3D3D',
+    surface05: '#525252',
+    surface06: '#666',
+    surface07: '#858585',
+    surface08: '#A3A3A3',
+    surface09: '#C2C2C2',
+    surface10: '#E0E0E0',
+    surface11: '#FFF',
+
+    success04: '#189B55',
+    success05: '#1EC26A',
+
+    warning05: '#F8AE1A',
+    warning06: '#FFD600',
+
+    support01: '#FF9B42',
+    support02: '#F96E57',
+    support03: '#DF486F',
+    support04: '#B23683',
+    support05: '#73348C',
+    support06: '#6A50D3',
+    support07: '#4380E2',
+    support08: '#00A8B3',
+    support09: '#2AA076',
+    support10: '#b4c5b3ff'
+};
+
 // Mapping between the token used and the color
 export const colorMap = {
     // ----- Surfaces -----
@@ -6,6 +54,7 @@ export const colorMap = {
     //  - JitsiMeetView.m
     //  - JitsiMeetView.java
     uiBackground: 'surface01',
+    uiBackground01: 'primary06',
 
     // Container backgrounds
     ui01: 'surface02',
@@ -18,54 +67,59 @@ export const colorMap = {
     ui08: 'ui21',
     ui09: 'ui08',
     ui10: 'ui04',
+    ui11: 'primary06',
+    ui12: 'support10',
 
     // ----- Actions -----
 
     // Primary
-    action01: 'action01',
-    action01Hover: 'hover01',
-    action01Active: 'active01',
+    action01: 'primary06',
+    action01Hover: 'primary07',
+    action01Active: 'primary04',
 
     // Secondary
-    action02: 'action02',
-    action02Hover: 'hover02',
-    action02Active: 'active02',
+    action02: 'surface10',
+    action02Hover: 'surface11',
+    action02Active: 'surface09',
 
     // Destructive
-    actionDanger: 'action03',
-    actionDangerHover: 'hover03',
-    actionDangerActive: 'active03',
+    actionDanger: 'error05',
+    actionDangerHover: 'error06',
+    actionDangerActive: 'error04',
 
     // Tertiary
     action03: 'transparent',
-    action03Hover: 'hover05',
+    action03Hover: 'surface04',
     action03Active: 'surface03',
 
     // Disabled
-    disabled01: 'disabled01',
+    disabled01: 'surface09',
 
     // Focus
-    focus01: 'focus01',
+    focus01: 'primary07',
 
     // ----- Links -----
 
-    link01: 'action01',
-    link01Hover: 'hover07',
-    link01Active: 'action04',
+    link01: 'primary07',
+    link01Hover: 'primary08',
+    link01Active: 'primary06',
 
     // ----- Text -----
 
     // Primary
-    text01: 'textColor01',
+    text01: 'surface11',
 
     // Secondary
-    text02: 'textColor02',
+    text02: 'surface09',
 
     // Tertiary
-    text03: 'ui03',
+    text03: 'surface07',
 
     // High-contrast
     text04: 'surface01',
+
+    // overflowmenu
+    text05: 'primary05',
 
     // Error
     textError: 'alertRed',
@@ -73,10 +127,10 @@ export const colorMap = {
     // ----- Icons -----
 
     // Primary
-    icon01: 'icon01',
+    icon01: 'primary05',
 
     // Secondary
-    icon02: 'ui21',
+    icon02: 'surface09',
 
     // Tertiary
     icon03: 'icon07',
@@ -104,10 +158,10 @@ export const colorMap = {
 
     // Success
     success01: 'success05',
-    success02: 'success01',
+    success02: 'success04',
 
     // Warning
-    warning01: 'warning01',
+    warning01: 'warning05',
     warning02: 'warning06',
 
     // ----- Support -----

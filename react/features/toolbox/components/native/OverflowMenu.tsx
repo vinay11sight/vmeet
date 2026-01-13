@@ -34,6 +34,8 @@ import AudioOnlyButton from './AudioOnlyButton';
 import LinkToSalesforceButton from './LinkToSalesforceButton';
 import OpenCarmodeButton from './OpenCarmodeButton';
 import RaiseHandButton from './RaiseHandButton';
+import ScreenSharingButton from './ScreenSharingButton';
+import MoreOptionsButton from './MoreOptionsButton';
 
 
 /**
@@ -130,11 +132,18 @@ class OverflowMenu extends PureComponent<IProps, IState> {
             _isSharedVideoEnabled,
             dispatch
         } = this.props;
+        const { showMore } = this.state;
 
         const buttonProps = {
             afterClick: this._onCancel,
             showLabel: true,
             styles: bottomSheetStyles.buttons
+        };
+
+        const moreOptionsButtonProps = {
+            ...buttonProps,
+            afterClick: this._onToggleMenu,
+            visible: !showMore
         };
 
         const topButtonProps = {
@@ -153,7 +162,7 @@ class OverflowMenu extends PureComponent<IProps, IState> {
 
         return (
             <BottomSheet
-                renderFooter = { this._renderReactionMenu }>
+                renderFooter = { null }>
                 <Divider style = { styles.divider as ViewStyle } />
                 <OpenCarmodeButton { ...topButtonProps } />
                 <AudioOnlyButton { ...buttonProps } />
@@ -161,7 +170,6 @@ class OverflowMenu extends PureComponent<IProps, IState> {
                 {/* @ts-ignore */}
                 <SecurityDialogButton { ...buttonProps } />
                 <RecordButton { ...buttonProps } />
-                <LiveStreamButton { ...buttonProps } />
                 <LinkToSalesforceButton { ...buttonProps } />
                 <WhiteboardButton { ...buttonProps } />
                 {/* @ts-ignore */}
@@ -173,8 +181,7 @@ class OverflowMenu extends PureComponent<IProps, IState> {
                 {/* @ts-ignore */}
                 <Divider style = { styles.divider as ViewStyle } />
                 <ClosedCaptionButton { ...buttonProps } />
-                <SharedDocumentButton { ...buttonProps } />
-                <SettingsButton { ...buttonProps } />
+                {/* <SettingsButton { ...buttonProps } /> // hide settings button */}
             </BottomSheet>
         );
     }
