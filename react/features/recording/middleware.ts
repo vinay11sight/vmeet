@@ -318,12 +318,15 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
     case TRACK_ADDED: {
         const { track } = action;
 
-        if (LocalRecordingManager.isRecordingLocally()
-                && track.mediaType === MEDIA_TYPE.AUDIO && track.local) {
-            const audioTrack = track.jitsiTrack.track;
+             setTimeout(async () => {
+                 const state = getState();
+                 activeConference = getCurrentConference(state);
 
-                    LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
-                }
+                 if (LocalRecordingManager.isRecordingLocally() && track.mediaType === MEDIA_TYPE.AUDIO) {
+                     const audioTrack = track.jitsiTrack.track;
+
+                     LocalRecordingManager.addAudioTrackToLocalRecording(audioTrack);
+                 }
                 //format : 'https://room-daily.11sight.com/11sight/9116c108-6587-4b08-bfb1-7c49ca7bc1c9?c=712917'
                 const conferenceProp = getAppProp(state, 'url') || {};
                 const tld = '.com';

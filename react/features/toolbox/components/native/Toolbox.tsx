@@ -67,6 +67,9 @@ function Toolbox(props: IProps) {
 
     const allButtons = useNativeToolboxButtons(customToolbarButtons);
 
+    console.log("allButtons keys = ");
+    Object.keys(allButtons).filter(key => console.log(key) );
+
     const { mainMenuButtons } = getVisibleNativeButtons({
         allButtons,
         clientWidth,
@@ -74,6 +77,14 @@ function Toolbox(props: IProps) {
         mainToolbarButtonsThresholds,
         toolbarButtons
     });
+    
+     console.log("mainMenuButtons");
+     console.log(mainMenuButtons.length);
+
+     mainMenuButtons.forEach(button => {
+            console.log(button.key);
+        });  
+     console.log(mainMenuButtons); 
 
     const bottomEdge = Platform.OS === 'ios' && _visible;
     const { buttonStylesBorderless, hangupButtonStyles } = _styles;

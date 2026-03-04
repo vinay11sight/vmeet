@@ -93,11 +93,11 @@ export const MAIN_TOOLBAR_BUTTONS_PRIORITY = [
     'camera',
     'desktop',
     'chat',
+    'overflowmenu',
     'raisehand',
     'reactions',
     'participants-pane',
     'tileview',
-    'overflowmenu',
     'hangup',
     'invite',
     'toggle-camera',
@@ -145,6 +145,7 @@ export const SPINNER_COLOR = '#929292';
 export const TOOLBAR_BUTTONS: ToolbarButton[] = [
     'camera',
     'chat',
+    'overflowmenu',
     'closedcaptions',
     'desktop',
     'download',
@@ -189,9 +190,9 @@ export const TOOLBAR_BUTTONS: ToolbarButton[] = [
 export const NATIVE_TOOLBAR_BUTTONS: NativeToolbarButton[] = [
     'camera',
     'chat',
+    'overflowmenu',
     'hangup',
     'microphone',
-    'overflowmenu',
     'raisehand',
     'desktop',
     'tileview'

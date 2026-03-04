@@ -26,6 +26,7 @@ export type ToolbarButton = 'camera' |
     'feedback' |
     'filmstrip' |
     'fullscreen' |
+    'overflowmenu' |
     'hangup' |
     'help' |
     'highlight' |
@@ -36,7 +37,6 @@ export type ToolbarButton = 'camera' |
     'mute-everyone' |
     'mute-video-everyone' |
     'noisesuppression' |
-    'overflowmenu' |
     'participants-pane' |
     'profile' |
     'raisehand' |

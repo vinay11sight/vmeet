@@ -67,17 +67,24 @@ export function isVideoMuteButtonDisabled(state: IReduxState) {
  * @returns {Object} - The visible buttons arrays .
  */
 export function getVisibleNativeButtons(
-        { allButtons, clientWidth, iAmVisitor, mainToolbarButtonsThresholds, toolbarButtons }: IGetVisibleNativeButtonsParams) {
+    { allButtons, clientWidth, iAmVisitor, mainToolbarButtonsThresholds, toolbarButtons }: IGetVisibleNativeButtonsParams) {
+
+    Object.keys(allButtons).filter(key => {
+        console.log("keyname:", key, "isdefined :", key !== 'undefined');
+        console.log("keyname:", key, "isButtonEnabled :", isButtonEnabled(key, toolbarButtons));
+    });
+
     let filteredButtons = Object.keys(allButtons).filter(key =>
         typeof key !== 'undefined' // filter invalid buttons that may be coming from config.mainToolbarButtons override
         && isButtonEnabled(key, toolbarButtons));
 
+    console.log("filteredButtons = ", filteredButtons);
     if (iAmVisitor) {
         filteredButtons = VISITORS_MODE_BUTTONS.filter(button => filteredButtons.indexOf(button) > -1);
     }
 
     const { order } = mainToolbarButtonsThresholds.find(({ width }) => clientWidth > width)
-    || mainToolbarButtonsThresholds[mainToolbarButtonsThresholds.length - 1];
+        || mainToolbarButtonsThresholds[mainToolbarButtonsThresholds.length - 1];
 
     const mainToolbarButtonKeysOrder = [
         ...order.filter(key => filteredButtons.includes(key)),
@@ -85,22 +92,31 @@ export function getVisibleNativeButtons(
         ...filteredButtons.filter(key => !order.includes(key) && !MAIN_TOOLBAR_BUTTONS_PRIORITY.includes(key))
     ];
 
+    console.log("mainToolbarButtonKeysOrder = ", mainToolbarButtonKeysOrder);
     const mainButtonsKeys = mainToolbarButtonKeysOrder.slice(0, order.length);
+    console.log("mainButtonsKeys = ", mainButtonsKeys);
+
+
     const overflowMenuButtons = filteredButtons.reduce((acc, key) => {
         if (!mainButtonsKeys.includes(key)) {
             acc.push(allButtons[key]);
         }
-
+        console.log("overflowMenuButtons1 = ", overflowMenuButtons);
         return acc;
     }, [] as IToolboxNativeButton[]);
 
+    console.log("overflowMenuButtons2 = ", overflowMenuButtons);
+
     // if we have 1 button in the overflow menu it is better to directly display it in the main toolbar by replacing
     // the "More" menu button with it.
+    console.log("overflowMenuButtons.length = ", overflowMenuButtons.length);
     if (overflowMenuButtons.length === 1) {
         const button = overflowMenuButtons.shift()?.key;
 
         button && mainButtonsKeys.push(button);
     }
+    console.log("overflowMenuButtons3 = ", overflowMenuButtons);
+
 
     const mainMenuButtons
         = mainButtonsKeys.map(key => allButtons[key]).sort((a, b) => {
@@ -108,7 +124,7 @@ export function getVisibleNativeButtons(
             // Native toolbox includes hangup and overflowmenu button keys, too
             // hangup goes last, overflowmenu goes second-to-last
             if (a.key === 'hangup' || a.key === 'overflowmenu') {
-                return 1;
+                return;
             }
 
             if (b.key === 'hangup' || b.key === 'overflowmenu') {
@@ -117,6 +133,9 @@ export function getVisibleNativeButtons(
 
             return 0; // other buttons are sorted by priority
         });
+
+    console.log("mainMenuButtons_ = ", mainMenuButtons);
+    console.log("overflowMenuButtons_ = ", overflowMenuButtons);
 
     return {
         mainMenuButtons,

@@ -75,7 +75,8 @@ const reactionMenu = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: BaseTheme.palette.ui01
+    backgroundColor: BaseTheme.palette.ui01,
+    padding: BaseTheme.spacing[3]
 };
 
 /**
